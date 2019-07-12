@@ -76,11 +76,11 @@ document.getElementById("searchbar").addEventListener("keyup", event => {
       return;
     }
 
-    let resultList = getSearchResults(mockData, searchTerm);
+    let resultList = getSearchResults([...mockData], searchTerm);
     let templateString = void 0;
 
     if (resultList.length > 0) {
-      resultList = sanitizeResultData(resultList);
+      resultList = sanitizeResultData(resultList, searchTerm);
       templateString = generateResultsTpl(resultList);
     } else {
       templateString = generateNoResultsTpl();
@@ -138,6 +138,7 @@ const performSearchBy = (property, searchTerm, inputArr) => {
       inputArr[index][property] &&
         inputArr[index][property].forEach(item => {
           if (item.match(regularExp)) {
+            inputArr[index].itemSearch = true;
             reultsArr.push(inputArr[index]);
           }
         });
@@ -153,8 +154,9 @@ const performSearchBy = (property, searchTerm, inputArr) => {
   @returns String template string for no results card
 */
 const generateNoResultsTpl = () => {
-  let tplString = `<div class="search__result-card no-result">
+  let tplString = `<div class="search__result-card no-result relative">
                     <b>No User Found</b>
+                    <i class="absolute fa fa-close" id="cancel-search"></i>
                    </div>`;
   return tplString;
 };
@@ -167,9 +169,14 @@ const generateNoResultsTpl = () => {
 const generateResultsTpl = resultArr => {
   let resultsTplStr = "";
   resultArr.forEach(result => {
-    let { id, name, items, address, pincode } = result;
-    resultsTplStr += `<div class="search__result-card result-data">
-                        <h6>${id}</h6>
+    console.log(result);
+    let { id, name, searchTerm, address, wasItemSearch } = result;
+    let itemTemplate = `<small class="items">${searchTerm} found in items</small>`;
+    resultsTplStr += `<div class="search__result-card result-data relative">
+                        <h6 class="id">${id}</h6>
+                        <i class="name">${name}</i>
+                        ${wasItemSearch ? itemTemplate : ""}
+                        <p class="address">${address}</p>
                       </div>`;
   });
   return resultsTplStr;
@@ -190,16 +197,20 @@ const wasResultsPopulated = reultsWrapper => {
 
 //sanitize result data
 /*
-  @input result Object
+  @input 
+    result Object
+    String SearchTerm
   @returns sanitized output Object
   @description Handles undefined properties if any from the server's response
 */
-const sanitizeResultData = result => {
-  let { id, name, items, address, pincode } = result;
+const sanitizeResultData = (result, searchTerm) => {
+  let { id, name, items, address, pincode, itemSearch } = result;
   result.id = id || "";
   result.name = name || "NA";
   result.items = (items && items.length > 0) || [];
   result.address = address || "";
   result.pincode = pincode || "";
+  result.searchTerm = searchTerm;
+  result.wasItemSearch = !!itemSearch;
   return result;
 };
