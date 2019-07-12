@@ -1,0 +1,40 @@
+/*resets*/
+html,
+body {
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+}
+
+/*custom reusable classes*/
+.relative {
+  position: relative;
+}
+.absolute {
+  position: absolute;
+}
+
+/*search container*/
+.search__container {
+  min-width: 300px;
+  max-width: 800px;
+  margin: 1rem auto;
+}
+
+/*search bar*/
+.search__container > input[name="search"] {
+  width: calc(100% - 3.5rem);
+  border: 0;
+  background-color: #e6e6e6;
+  color: #848484;
+  font-size: 1.5rem;
+  height: 35px;
+  padding: 0.5rem 0.5rem 0.5rem 3rem;
+}
+.search__icon {
+  top: 30px;
+  padding: 0 1rem;
+  font-size: 1.5rem;
+  color: #848484;
+  z-index: 1;
+}
