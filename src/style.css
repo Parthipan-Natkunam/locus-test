@@ -75,3 +75,26 @@ body {
   opacity: 0.5;
   cursor: pointer;
 }
+
+.result-data .id {
+  margin: 0;
+}
+.result-data .address {
+  margin: 1rem 0;
+}
+.result-data .items {
+  margin: 0.3rem 0;
+  border-top: 1px solid rgba(15, 15, 15, 0.3);
+  border-bottom: 1px solid rgba(15, 15, 15, 0.3);
+  padding: 0.2rem 0.2rem 0.2rem 1rem;
+}
+.result-data .items::before {
+  content: "";
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #5252f0;
+  position: absolute;
+  top: 0.5rem;
+  left: 0;
+}

@@ -64,24 +64,36 @@ const mockData = [
   }
 ];
 
+let prevoiusSearchTerm = void 0;
+
 //searchbar keyup event listener
 document.getElementById("searchbar").addEventListener("keyup", event => {
   // handle older IE with event.which
   if (event.keyCode === 13 || event.which === 13) {
+    let searchTerm = event.currentTarget.value.trim();
+
+    //avoid multiple searches for the same search string
+    if (searchTerm === prevoiusSearchTerm) {
+      return;
+    }
+    prevoiusSearchTerm = searchTerm;
+
     const reultsWrapper = document.querySelector(".search__results-container");
     reultsWrapper.innerHTML = "";
-    let searchTerm = event.currentTarget.value;
 
+    //do not perform any action on empty search strings
     if (!searchTerm) {
       return;
     }
 
-    let resultList = getSearchResults([...mockData], searchTerm);
+    //prevent mutation of the original Datastructure
+    let workingDataCopy = JSON.parse(JSON.stringify(mockData));
+
+    let resultList = getSearchResults(workingDataCopy, searchTerm);
     let templateString = void 0;
 
     if (resultList.length > 0) {
-      resultList = sanitizeResultData(resultList, searchTerm);
-      templateString = generateResultsTpl(resultList);
+      templateString = generateResultsTpl(resultList, searchTerm);
     } else {
       templateString = generateNoResultsTpl();
     }
@@ -138,7 +150,7 @@ const performSearchBy = (property, searchTerm, inputArr) => {
       inputArr[index][property] &&
         inputArr[index][property].forEach(item => {
           if (item.match(regularExp)) {
-            inputArr[index].itemSearch = true;
+            inputArr[index].wasItemSearch = true;
             reultsArr.push(inputArr[index]);
           }
         });
@@ -163,17 +175,19 @@ const generateNoResultsTpl = () => {
 
 //generate reults data template
 /*
-  @input Array of results object
+  @input 
+  Array of results object
+  String searchTerm
   @returns String template string for result card
 */
-const generateResultsTpl = resultArr => {
+const generateResultsTpl = (resultArr, searchTerm) => {
   let resultsTplStr = "";
   resultArr.forEach(result => {
-    console.log(result);
-    let { id, name, searchTerm, address, wasItemSearch } = result;
-    let itemTemplate = `<small class="items">${searchTerm} found in items</small>`;
+    let sanitizedResult = sanitizeResultData(result);
+    let { id, name, address, wasItemSearch } = sanitizedResult;
+    let itemTemplate = `<p class="items relative">${searchTerm} found in items</p>`;
     resultsTplStr += `<div class="search__result-card result-data relative">
-                        <h6 class="id">${id}</h6>
+                        <h3 class="id">${id}</h3>
                         <i class="name">${name}</i>
                         ${wasItemSearch ? itemTemplate : ""}
                         <p class="address">${address}</p>
@@ -199,18 +213,16 @@ const wasResultsPopulated = reultsWrapper => {
 /*
   @input 
     result Object
-    String SearchTerm
   @returns sanitized output Object
   @description Handles undefined properties if any from the server's response
 */
-const sanitizeResultData = (result, searchTerm) => {
-  let { id, name, items, address, pincode, itemSearch } = result;
+const sanitizeResultData = result => {
+  let { id, name, items, address, pincode, wasItemSearch } = result;
   result.id = id || "";
   result.name = name || "NA";
-  result.items = (items && items.length > 0) || [];
+  result.items = items && items.length > 0 ? items : [];
   result.address = address || "";
   result.pincode = pincode || "";
-  result.searchTerm = searchTerm;
-  result.wasItemSearch = !!itemSearch;
+  result.wasItemSearch = !!wasItemSearch;
   return result;
 };
