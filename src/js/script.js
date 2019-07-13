@@ -68,6 +68,8 @@ let prevoiusSearchTerm = void 0;
 
 //searchbar keyup event listener
 document.getElementById("searchbar").addEventListener("keyup", event => {
+  let reultsWrapper = document.querySelector(".search__results-container");
+
   // handle older IE with event.which
   if (event.keyCode === 13 || event.which === 13) {
     let searchTerm = event.currentTarget.value.trim();
@@ -78,7 +80,6 @@ document.getElementById("searchbar").addEventListener("keyup", event => {
     }
     prevoiusSearchTerm = searchTerm;
 
-    let reultsWrapper = document.querySelector(".search__results-container");
     reultsWrapper.innerHTML = "";
 
     //do not perform any action on empty search strings
@@ -101,6 +102,15 @@ document.getElementById("searchbar").addEventListener("keyup", event => {
 
     attachMouseOverListener(reultsWrapper);
     attachMouseLeaveListener(reultsWrapper);
+  } else if (event.keycode === 40 || event.which === 40) {
+    let currentActiveCard = document.querySelector(".result-data.active");
+    if (currentActiveCard) {
+      highlightNextCard(currentActiveCard);
+    } else {
+      reultsWrapper.firstChild.classList.add("active");
+    }
+    scrollToView(document.querySelector(".result-data.active"), reultsWrapper);
+    document.getElementById("searchbar").focus();
   }
   //downarrow = 40
   //uparrow =38
@@ -237,10 +247,25 @@ const mouseleaveCallback = ev => {
 };
 
 const attachMouseOverListener = reultsWrapper => {
-  reultsWrapper.addEventListener("mouseover", mouseoverCallback);
+  reultsWrapper &&
+    reultsWrapper.addEventListener("mouseover", mouseoverCallback);
 };
 
 const attachMouseLeaveListener = reultsWrapper => {
   reultsWrapper &&
     reultsWrapper.addEventListener("mouseleave", mouseleaveCallback);
+};
+
+//keyboard highlights
+const highlightNextCard = (currentCard, isCallback) => {
+  let nextCard = currentCard.nextElementSibling;
+  if (nextCard) {
+    currentCard.classList.remove("active");
+    nextCard.classList.add("active");
+  }
+};
+
+//Scroll into view
+const scrollToView = (card, wrapper) => {
+  wrapper.scrollTop = card.offsetTop - card.clientHeight;
 };
