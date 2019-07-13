@@ -105,17 +105,29 @@ document.getElementById("searchbar").addEventListener("keyup", event => {
   } else if (event.keycode === 40 || event.which === 40) {
     handleDownKey(resultsWrapper);
   } else if (event.keycode === 38 || event.which === 38) {
-    //uparrow
+    handleUpKey(resultsWrapper);
   }
   //downarrow = 40
   //uparrow =38
 });
 
-//habdle up arrow keyboard input
+//habdle down arrow keyboard input
 const handleDownKey = resultsWrapper => {
   let currentActiveCard = document.querySelector(".result-data.active");
   if (currentActiveCard) {
     highlightNextCard(currentActiveCard);
+  } else {
+    resultsWrapper.firstChild.classList.add("active");
+  }
+  scrollToView(document.querySelector(".result-data.active"), resultsWrapper);
+  document.getElementById("searchbar").focus();
+};
+
+//handle uparrow key input
+const handleUpKey = resultsWrapper => {
+  let currentActiveCard = document.querySelector(".result-data.active");
+  if (currentActiveCard) {
+    highlightPreviousCard(currentActiveCard);
   } else {
     resultsWrapper.firstChild.classList.add("active");
   }
@@ -269,6 +281,14 @@ const highlightNextCard = currentCard => {
   if (nextCard) {
     currentCard.classList.remove("active");
     nextCard.classList.add("active");
+  }
+};
+
+const highlightPreviousCard = currentCard => {
+  let previousCard = currentCard.previousElementSibling;
+  if (previousCard) {
+    currentCard.classList.remove("active");
+    previousCard.classList.add("active");
   }
 };
 
