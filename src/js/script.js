@@ -68,7 +68,7 @@ let prevoiusSearchTerm = void 0;
 
 //searchbar keyup event listener
 document.getElementById("searchbar").addEventListener("keyup", event => {
-  let reultsWrapper = document.querySelector(".search__results-container");
+  let resultsWrapper = document.querySelector(".search__results-container");
 
   // handle older IE with event.which
   if (event.keyCode === 13 || event.which === 13) {
@@ -80,7 +80,7 @@ document.getElementById("searchbar").addEventListener("keyup", event => {
     }
     prevoiusSearchTerm = searchTerm;
 
-    reultsWrapper.innerHTML = "";
+    resultsWrapper.innerHTML = "";
 
     //do not perform any action on empty search strings
     if (!searchTerm) {
@@ -98,23 +98,30 @@ document.getElementById("searchbar").addEventListener("keyup", event => {
     } else {
       templateString = generateNoResultsTpl();
     }
-    reultsWrapper.innerHTML = templateString;
+    resultsWrapper.innerHTML = templateString;
 
-    attachMouseOverListener(reultsWrapper);
-    attachMouseLeaveListener(reultsWrapper);
+    attachMouseOverListener(resultsWrapper);
+    attachMouseLeaveListener(resultsWrapper);
   } else if (event.keycode === 40 || event.which === 40) {
-    let currentActiveCard = document.querySelector(".result-data.active");
-    if (currentActiveCard) {
-      highlightNextCard(currentActiveCard);
-    } else {
-      reultsWrapper.firstChild.classList.add("active");
-    }
-    scrollToView(document.querySelector(".result-data.active"), reultsWrapper);
-    document.getElementById("searchbar").focus();
+    handleDownKey(resultsWrapper);
+  } else if (event.keycode === 38 || event.which === 38) {
+    //uparrow
   }
   //downarrow = 40
   //uparrow =38
 });
+
+//habdle up arrow keyboard input
+const handleDownKey = resultsWrapper => {
+  let currentActiveCard = document.querySelector(".result-data.active");
+  if (currentActiveCard) {
+    highlightNextCard(currentActiveCard);
+  } else {
+    resultsWrapper.firstChild.classList.add("active");
+  }
+  scrollToView(document.querySelector(".result-data.active"), resultsWrapper);
+  document.getElementById("searchbar").focus();
+};
 
 //initiate search and return final results
 /*
@@ -246,18 +253,18 @@ const mouseleaveCallback = ev => {
   }
 };
 
-const attachMouseOverListener = reultsWrapper => {
-  reultsWrapper &&
-    reultsWrapper.addEventListener("mouseover", mouseoverCallback);
+const attachMouseOverListener = resultsWrapper => {
+  resultsWrapper &&
+    resultsWrapper.addEventListener("mouseover", mouseoverCallback);
 };
 
-const attachMouseLeaveListener = reultsWrapper => {
-  reultsWrapper &&
-    reultsWrapper.addEventListener("mouseleave", mouseleaveCallback);
+const attachMouseLeaveListener = resultsWrapper => {
+  resultsWrapper &&
+    resultsWrapper.addEventListener("mouseleave", mouseleaveCallback);
 };
 
 //keyboard highlights
-const highlightNextCard = (currentCard, isCallback) => {
+const highlightNextCard = currentCard => {
   let nextCard = currentCard.nextElementSibling;
   if (nextCard) {
     currentCard.classList.remove("active");
