@@ -95,10 +95,15 @@ document.getElementById("searchbar").addEventListener("keyup", event => {
 
     if (resultList.length > 0) {
       templateString = generateResultsTpl(resultList, searchTerm);
+      templateString += `<i class="absolute fa fa-close" id="cancel-search"></i>`;
     } else {
       templateString = generateNoResultsTpl();
     }
+
     resultsWrapper.innerHTML = templateString;
+
+    let closeBtn = document.getElementById("cancel-search");
+    closeBtn && attachCloseBtnClickListener(closeBtn, resultsWrapper);
 
     attachMouseOverListener(resultsWrapper);
     attachMouseLeaveListener(resultsWrapper);
@@ -200,8 +205,8 @@ const performSearchBy = (property, searchTerm, inputArr) => {
 const generateNoResultsTpl = () => {
   let tplString = `<div class="search__result-card no-result relative">
                     <b>No User Found</b>
-                    <i class="absolute fa fa-close" id="cancel-search"></i>
-                   </div>`;
+                   </div>
+                   <i class="absolute fa fa-close" id="cancel-search"></i>`;
   return tplString;
 };
 
@@ -278,7 +283,7 @@ const attachMouseLeaveListener = resultsWrapper => {
 //keyboard highlights
 const highlightNextCard = currentCard => {
   let nextCard = currentCard.nextElementSibling;
-  if (nextCard) {
+  if (nextCard && nextCard.className.includes(" result-data ")) {
     currentCard.classList.remove("active");
     nextCard.classList.add("active");
   }
@@ -286,7 +291,7 @@ const highlightNextCard = currentCard => {
 
 const highlightPreviousCard = currentCard => {
   let previousCard = currentCard.previousElementSibling;
-  if (previousCard) {
+  if (previousCard && previousCard.className.includes(" result-data ")) {
     currentCard.classList.remove("active");
     previousCard.classList.add("active");
   }
@@ -295,4 +300,15 @@ const highlightPreviousCard = currentCard => {
 //Scroll into view
 const scrollToView = (card, wrapper) => {
   wrapper.scrollTop = card.offsetTop - card.clientHeight;
+};
+
+//closeBtn handler
+const attachCloseBtnClickListener = (closeBtn, resultsWrapper) => {
+  closeBtn.addEventListener("click", () => {
+    resultsWrapper.innerHTML = null;
+    prevoiusSearchTerm = void 0;
+    let searchBar = document.getElementById("searchbar");
+    searchBar.value = "";
+    searchBar.focus();
+  });
 };
