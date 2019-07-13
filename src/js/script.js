@@ -2,6 +2,11 @@ const mockData = MockDataProvider.getMockData();
 const sanitizer = SanitizerModule;
 const keyboardUtils = KeyboardUtilsModule;
 
+const KeyBoard = {
+  DOWN: "down",
+  UP: "UP"
+};
+
 let prevoiusSearchTerm = void 0;
 
 //searchbar keyup event listener
@@ -45,34 +50,21 @@ document.getElementById("searchbar").addEventListener("keyup", event => {
     attachMouseOverListener(resultsWrapper);
     attachMouseLeaveListener(resultsWrapper);
   } else if (event.keycode === 40 || event.which === 40) {
-    handleDownKey(resultsWrapper);
+    handleKeyBoardInterrupts(resultsWrapper, KeyBoard.DOWN);
   } else if (event.keycode === 38 || event.which === 38) {
-    handleUpKey(resultsWrapper);
+    handleKeyBoardInterrupts(resultsWrapper, KeyBoard.UP);
   }
   //downarrow = 40
   //uparrow =38
 });
 
 //habdle down arrow keyboard input
-const handleDownKey = resultsWrapper => {
+const handleKeyBoardInterrupts = (resultsWrapper, direction) => {
   let currentActiveCard = document.querySelector(".result-data.active");
   if (currentActiveCard) {
-    keyboardUtils.nextCard(currentActiveCard);
-  } else {
-    resultsWrapper.firstChild.classList.add("active");
-  }
-  keyboardUtils.setScrollPosition(
-    document.querySelector(".result-data.active"),
-    resultsWrapper
-  );
-  document.getElementById("searchbar").focus();
-};
-
-//handle uparrow key input
-const handleUpKey = resultsWrapper => {
-  let currentActiveCard = document.querySelector(".result-data.active");
-  if (currentActiveCard) {
-    keyboardUtils.previousCard(currentActiveCard);
+    direction === KeyBoard.DOWN
+      ? keyboardUtils.nextCard(currentActiveCard)
+      : keyboardUtils.previousCard(currentActiveCard);
   } else {
     resultsWrapper.firstChild.classList.add("active");
   }
