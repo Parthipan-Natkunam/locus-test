@@ -1,4 +1,5 @@
 const mockData = MockDataProvider.getMockData();
+const sanitizer = SanitizerModule;
 let prevoiusSearchTerm = void 0;
 
 //searchbar keyup event listener
@@ -6,7 +7,7 @@ document.getElementById("searchbar").addEventListener("keyup", event => {
   let resultsWrapper = document.querySelector(".search__results-container");
 
   if (event.keyCode === 13 || event.which === 13) {
-    let searchTerm = event.currentTarget.value.trim();
+    let searchTerm = sanitizer.sanitizeString(event.currentTarget.value);
 
     //avoid multiple searches for the same search string
     if (searchTerm === prevoiusSearchTerm) {
@@ -154,7 +155,7 @@ const generateNoResultsTpl = () => {
 const generateResultsTpl = (resultArr, searchTerm) => {
   let resultsTplStr = "";
   resultArr.forEach(result => {
-    let sanitizedResult = sanitizeResultData(result);
+    let sanitizedResult = sanitizer.sanitizeResultObject(result);
     let { id, name, address, wasItemSearch } = sanitizedResult;
     let itemTemplate = `<p class="items relative">${searchTerm} found in items</p>`;
     resultsTplStr += `<div class="search__result-card result-data relative">
@@ -165,24 +166,6 @@ const generateResultsTpl = (resultArr, searchTerm) => {
                       </div>`;
   });
   return resultsTplStr;
-};
-
-//sanitize result data
-/*
-  @input 
-    result Object
-  @returns sanitized output Object
-  @description Handles undefined properties if any from the server's response
-*/
-const sanitizeResultData = result => {
-  let { id, name, items, address, pincode, wasItemSearch } = result;
-  result.id = id || "";
-  result.name = name || "NA";
-  result.items = items && items.length > 0 ? items : [];
-  result.address = address || "";
-  result.pincode = pincode || "";
-  result.wasItemSearch = !!wasItemSearch;
-  return result;
 };
 
 //mouse highlight
