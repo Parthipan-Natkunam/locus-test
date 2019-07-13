@@ -1,5 +1,7 @@
 const mockData = MockDataProvider.getMockData();
 const sanitizer = SanitizerModule;
+const keyboardUtils = KeyboardUtilsModule;
+
 let prevoiusSearchTerm = void 0;
 
 //searchbar keyup event listener
@@ -55,11 +57,14 @@ document.getElementById("searchbar").addEventListener("keyup", event => {
 const handleDownKey = resultsWrapper => {
   let currentActiveCard = document.querySelector(".result-data.active");
   if (currentActiveCard) {
-    highlightNextCard(currentActiveCard);
+    keyboardUtils.nextCard(currentActiveCard);
   } else {
     resultsWrapper.firstChild.classList.add("active");
   }
-  scrollToView(document.querySelector(".result-data.active"), resultsWrapper);
+  keyboardUtils.setScrollPosition(
+    document.querySelector(".result-data.active"),
+    resultsWrapper
+  );
   document.getElementById("searchbar").focus();
 };
 
@@ -67,11 +72,14 @@ const handleDownKey = resultsWrapper => {
 const handleUpKey = resultsWrapper => {
   let currentActiveCard = document.querySelector(".result-data.active");
   if (currentActiveCard) {
-    highlightPreviousCard(currentActiveCard);
+    keyboardUtils.previousCard(currentActiveCard);
   } else {
     resultsWrapper.firstChild.classList.add("active");
   }
-  scrollToView(document.querySelector(".result-data.active"), resultsWrapper);
+  keyboardUtils.setScrollPosition(
+    document.querySelector(".result-data.active"),
+    resultsWrapper
+  );
   document.getElementById("searchbar").focus();
 };
 
@@ -195,28 +203,6 @@ const attachMouseOverListener = resultsWrapper => {
 const attachMouseLeaveListener = resultsWrapper => {
   resultsWrapper &&
     resultsWrapper.addEventListener("mouseleave", mouseleaveCallback);
-};
-
-//keyboard highlights
-const highlightNextCard = currentCard => {
-  let nextCard = currentCard.nextElementSibling;
-  if (nextCard && nextCard.className.includes(" result-data ")) {
-    currentCard.classList.remove("active");
-    nextCard.classList.add("active");
-  }
-};
-
-const highlightPreviousCard = currentCard => {
-  let previousCard = currentCard.previousElementSibling;
-  if (previousCard && previousCard.className.includes(" result-data ")) {
-    currentCard.classList.remove("active");
-    previousCard.classList.add("active");
-  }
-};
-
-//Scroll into view
-const scrollToView = (card, wrapper) => {
-  wrapper.scrollTop = card.offsetTop - card.clientHeight;
 };
 
 //closeBtn handler
