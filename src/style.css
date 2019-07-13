@@ -59,7 +59,7 @@ body {
   border-bottom: 1px solid #333;
   cursor: pointer;
 }
-.search__result-card:not(.no-result):hover {
+.search__result-card:not(.no-result).active {
   background: #fffd6e;
 }
 .search__result-card.no-result {

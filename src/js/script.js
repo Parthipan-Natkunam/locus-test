@@ -78,7 +78,7 @@ document.getElementById("searchbar").addEventListener("keyup", event => {
     }
     prevoiusSearchTerm = searchTerm;
 
-    const reultsWrapper = document.querySelector(".search__results-container");
+    let reultsWrapper = document.querySelector(".search__results-container");
     reultsWrapper.innerHTML = "";
 
     //do not perform any action on empty search strings
@@ -98,6 +98,9 @@ document.getElementById("searchbar").addEventListener("keyup", event => {
       templateString = generateNoResultsTpl();
     }
     reultsWrapper.innerHTML = templateString;
+
+    attachMouseOverListener(reultsWrapper);
+    attachMouseLeaveListener(reultsWrapper);
   }
   //downarrow = 40
   //uparrow =38
@@ -196,19 +199,6 @@ const generateResultsTpl = (resultArr, searchTerm) => {
   return resultsTplStr;
 };
 
-//check if search returned results
-/*
-  @input DOMElement resultWrapper
-  @returns boolean
-  @description Check if results were populated for a specific search action
-*/
-const wasResultsPopulated = reultsWrapper => {
-  return (
-    reultsWrapper.nextElementSibling &&
-    reultsWrapper.nextElementSibling.className.includes(" result-data ")
-  );
-};
-
 //sanitize result data
 /*
   @input 
@@ -225,4 +215,32 @@ const sanitizeResultData = result => {
   result.pincode = pincode || "";
   result.wasItemSearch = !!wasItemSearch;
   return result;
+};
+
+//mouse highlight
+const mouseoverCallback = ev => {
+  ev.stopPropagation();
+  let resultCard = ev.target.closest(".result-data");
+  if (resultCard) {
+    let currentActiveCard = document.querySelector(".result-data.active");
+    currentActiveCard && currentActiveCard.classList.remove("active");
+    resultCard.className += " active ";
+  }
+};
+
+const mouseleaveCallback = ev => {
+  ev.stopPropagation();
+  let activeResultCard = document.querySelector(".result-data.active");
+  if (activeResultCard) {
+    activeResultCard.classList.remove("active");
+  }
+};
+
+const attachMouseOverListener = reultsWrapper => {
+  reultsWrapper.addEventListener("mouseover", mouseoverCallback);
+};
+
+const attachMouseLeaveListener = reultsWrapper => {
+  reultsWrapper &&
+    reultsWrapper.addEventListener("mouseleave", mouseleaveCallback);
 };
